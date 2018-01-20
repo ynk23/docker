@@ -1,0 +1,11 @@
+1. error occoured 'docker-compose up -d'
+
+compose version 2
+  not support export environment variable in links:
+  so sameersbn/redmine failed to start, exited 0.
+  thus redmine invoke on compose version 1
+
+2. can not log in redmine
+
+user     : admin
+password : admin

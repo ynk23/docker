@@ -1,0 +1,113 @@
+version: '2'
+services:
+#  postgresql:
+#    image: sameersbn/postgresql:latest
+#    environment:
+#      - DB_USER=redmine
+#      - DB_PASS=password
+#      - DB_NAME=redmine_production
+#    volumes:
+#      - postgresql-data:/var/lib/postgresql
+
+#  redmine-plugin:
+#    build:
+#      context:
+#        ./redmine
+#      dockerfile:
+#        Dockerfile
+#      args:
+#        - http_proxy=${http_proxy}
+#        - https_proxy=${http_proxy}
+#        - no_proxy=${no_proxy}
+#    volumes:
+#      - redmine-plugin-data:/srv/redmine/plugins
+
+  redmine:
+    image: redmine:latest
+    container_name: redmine
+#    depends_on:
+#      - postgresql
+#      - redmine-plugin
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+
+      - TZ=Asia/Tokyo
+
+      - REDMINE_PORT=3000
+      - REDMINE_HTTPS=false
+      - REDMINE_RELATIVE_URL_ROOT=
+      - REDMINE_SECRET_TOKEN=
+
+      - REDMINE_SUDO_MODE_ENABLED=false
+      - REDMINE_SUDO_MODE_TIMEOUT=15
+
+      - REDMINE_CONCURRENT_UPLOADS=2
+
+      - REDMINE_BACKUP_SCHEDULE=
+      - REDMINE_BACKUP_EXPIRY=
+      - REDMINE_BACKUP_TIME=
+
+      - SMTP_ENABLED=false
+      - SMTP_METHOD=smtp
+      - SMTP_DOMAIN=www.example.com
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=mailer@example.com
+      - SMTP_PASS=password
+      - SMTP_STARTTLS=true
+      - SMTP_AUTHENTICATION=:login
+
+      - IMAP_ENABLED=false
+      - IMAP_HOST=imap.gmail.com
+      - IMAP_PORT=993
+      - IMAP_USER=mailer@example.com
+      - IMAP_PASS=password
+      - IMAP_SSL=true
+      - IMAP_INTERVAL=30
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - redmine-data:/usr/src/redmine/files
+#      - redmine-plugin-data:/usr/src/redmine/plugins
+
+  jenkins:
+    image: jenkins:latest
+    container_name: jenkins
+#    environment:
+#      - JENKINS_OPTS=--prefix=/jenkins
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+  maildev:
+    image: djfarrelly/maildev:latest
+    container_name: maildev
+    ports:
+      - "1025:25"
+      - "1080:80"
+
+##   nginx (reverse proxy) # 2016/3/30 chage nonactive
+#  proxy:
+#    build: proxy
+#    links:
+#      - gitlab:gitlab
+#      - redmine:redmine
+#      - jenkins:jenkins
+#    ports:
+#      - "80:80"
+
+volumes:
+  jenkins-data:
+    driver: local
+  redmine-data:
+    driver: local
+#  redmine-plugin-data:
+#    driver: local
+#  postgresql-data:
+#    driver: local
+
+
